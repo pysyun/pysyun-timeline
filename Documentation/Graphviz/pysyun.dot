@@ -4,10 +4,15 @@ digraph G {
 	pysyun.converters.JSONArray -> pysyun.segmenters.CurrencyAbbreviations;
     Storage.TimeLine -> pysyun.segmenters.CurrencyAbbreviations;
     pysyun.segmenters.CurrencyAbbreviations -> pysyun.filters.BlackList;
+    pysyun.segmenters.CurrencyAbbreviations -> pysyun.filters.WhiteList;
 	Storage.TimeLine -> pysyun.filters.Hyperlinks;
 	pysyun.filters.Hyperlinks -> pysyun.filters.TelegramHyperlinks;
 	pysyun.filters.TelegramHyperlinks -> pysyun.filters.BlackList;
+	pysyun.filters.BlackList -> pysyun.filters.WhiteList;
+	pysyun.filters.WhiteList -> pysyun.filters.BlackList;
+	pysyun.filters.TelegramHyperlinks -> pysyun.filters.WhiteList;
 	pysyun.filters.BlackList -> pysyun.algebra.Add;
+	pysyun.filters.WhiteList -> pysyun.algebra.Add;
 	pysyun.algebra.Add -> pysyun.algebra.Add;
 	pysyun.algebra.Add -> pysyun.reducers.TextCorpus;
 	pysyun.algebra.Add -> pysyun.reducers.NGram;
