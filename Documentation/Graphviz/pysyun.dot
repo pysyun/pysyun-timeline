@@ -1,0 +1,14 @@
+digraph G {
+	# rankdir=LR;
+	pysyun.converters.JSONArray -> pysyun.filters.Hyperlinks;
+	pysyun.converters.JSONArray -> pysyun.segmenters.CurrencyAbbreviations;
+    Storage.TimeLine -> pysyun.segmenters.CurrencyAbbreviations;
+    pysyun.segmenters.CurrencyAbbreviations -> pysyun.filters.BlackList;
+	Storage.TimeLine -> pysyun.filters.Hyperlinks;
+	pysyun.filters.Hyperlinks -> pysyun.filters.TelegramHyperlinks;
+	pysyun.filters.TelegramHyperlinks -> pysyun.filters.BlackList;
+	pysyun.filters.BlackList -> pysyun.algebra.Add;
+	pysyun.algebra.Add -> pysyun.algebra.Add;
+	pysyun.algebra.Add -> pysyun.reducers.TextCorpus;
+	pysyun.algebra.Add -> pysyun.reducers.NGram;
+}
