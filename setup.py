@@ -6,6 +6,6 @@ setup (
    description = 'Syun\'s Python SDK for time series analysis. Python toolkit for analyzing time series data.',
    author = 'Py Syun',
    author_email = 'pysyun@vitche.com',
-   py_modules = ['algebra', 'converters', 'filters', 'reducers', 'segmenters', 'sources'],
+   py_modules = ['pysyun_timeline.algebra', 'pysyun_timeline.converters', 'pysyun_timeline.filters', 'pysyun_timeline.reducers', 'pysyun_timeline.segmenters', 'pysyun_timeline.sources'],
    install_requires = []
 )
