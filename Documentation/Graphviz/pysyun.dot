@@ -1,5 +1,11 @@
 digraph G {
 	# rankdir=LR;
+	pysyun.filters.Hyperlinks[style=filled fillcolor=MediumSpringGreen]
+	pysyun.segmenters.CurrencyAbbreviations[style=filled fillcolor=MediumSpringGreen]
+	pysyun.filters.BlackList[style=filled fillcolor=MediumSpringGreen]
+	pysyun.algebra.Add[style=filled fillcolor=MediumSpringGreen]
+	pysyun.reducers.TextCorpus[style=filled fillcolor=MediumSpringGreen]
+	Storage.TimeLine[style=filled fillcolor=MediumSpringGreen]
 	pysyun.converters.JSONArray -> pysyun.filters.Hyperlinks;
 	pysyun.converters.JSONArray -> pysyun.segmenters.CurrencyAbbreviations;
     Storage.TimeLine -> pysyun.segmenters.CurrencyAbbreviations;
