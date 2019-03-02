@@ -7,5 +7,5 @@ setup (
    author = 'Py Syun',
    author_email = 'pysyun@vitche.com',
    py_modules = ['algebra', 'converters', 'filters', 'reducers', 'segmenters', 'sources'],
-   install_requires = ['re']
+   install_requires = []
 )

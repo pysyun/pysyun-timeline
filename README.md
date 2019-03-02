@@ -13,3 +13,9 @@ The library includes independent components for:
 ## Pipelines
 Components can be joined into pipelines:
 ![Time-series data flow](https://github.com/pysyun/pysyun-timeline/blob/master/Documentation/Graphviz/pysyun.png?raw=true)
+
+## Installation
+To install, run the following BASH command:
+```shell
+pip install git+https://github.com/pysyun/pysyun-timeline.git
+```
