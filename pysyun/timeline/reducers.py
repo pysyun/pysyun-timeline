@@ -7,4 +7,5 @@ class TextCorpus:
             value = timeLine[i]['value']
             result.extend(value)
         result = set(result)
+        result = list(result)
         return result
