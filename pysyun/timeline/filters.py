@@ -18,7 +18,7 @@ class BlackList:
         return results
 
 # Takes all regular expression matches from a time-line according to the regular expressions white list
-class RegularExpressionsWhiteList:
+class RegularExpressionWhiteList:
     
     def __init__(self, expressions):
         self.expressions = expressions
