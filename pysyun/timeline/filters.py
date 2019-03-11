@@ -16,3 +16,24 @@ class BlackList:
                     'value': segment
                 })
         return results
+
+# Takes all regular expression matches from a time-line according to the regular expressions white list
+class RegularExpressionsWhiteList:
+    
+    def __init__(self, expressions):
+        self.expressions = expressions
+    
+    def process(self, timeLine):
+        results = []
+        for i in range(len(timeLine)):
+            segments = []
+            for segment in timeLine[i]['value']:
+                for expression in self.expressions:
+                    if None != re.match(expression, segment):
+                        segments.append(segment)
+            if len(segments):
+                results.append ({
+                    'time': timeLine[i]['time'],
+                    'value': segments
+                })
+        return results
