@@ -1,3 +1,5 @@
+import re
+
 # Removes all exact matches from a time-line according to the black list
 class BlackList:
     
