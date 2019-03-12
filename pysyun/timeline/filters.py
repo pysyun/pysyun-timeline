@@ -40,19 +40,42 @@ class RegularExpressionWhiteList:
                 })
         return results
 
+# Takes all Telegram hyperlinks
 class TelegramHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/'])
-    
+
+# Takes all Telegram group chat hyperlinks
 class TelegramChatHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/joinchat\/'])
 
+# Takes all Telegram invitation hyperlinks
 class TelegramInvitationHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         # Not a chat, not a sticker, not a robot
         super().__init__(['https:\/\/t\.me\/((?!joinchat|addstickers).(?![a-zA-Z0-9_]*\?start=).[a-zA-Z0-9_]*)'])
         
+# Takes all Telegram bot hyperlinks
 class TelegramBotHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/([a-zA-Z0-9_]*)\?start='])
+
+# Takes all Telegram invitation hyperlinks and removes additional parameters from them
+class TelegramInvitationPureHyperlinks(TelegramInvitationHyperlinks):
+    def process(self, timeLine):
+        timeLine = super(TelegramInvitationPureHyperlinks, self).process(timeLine)
+        results = []
+        for i in range(len(timeLine)):
+            segments = []
+            for segment in timeLine[i]['value']:
+                parsed = urlparse(segment)
+                search = re.search('\/([a-zA-Z0-9_]*)', parsed.path)
+                segment = parsed.scheme + '://' + parsed.netloc + '/' + search.group(1)
+                segments.append(segment)
+            if len(segments):
+                results.append ({
+                    'time': timeLine[i]['time'],
+                    'value': segments
+                })
+        return results
