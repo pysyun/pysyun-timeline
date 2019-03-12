@@ -17,5 +17,5 @@ Components can be joined into pipelines:
 ## Installation
 To install, run the following BASH command:
 ```shell
-pip install git+https://github.com/pysyun/pysyun-timeline.git
+pip install git+https://github.com/pysyun/pysyun-timeline.git --upgrade
 ```
