@@ -39,3 +39,20 @@ class RegularExpressionWhiteList:
                     'value': segments
                 })
         return results
+
+class TelegramHyperlinks(RegularExpressionWhiteList):
+    def __init__(self):
+        super().__init__(['https:\/\/t\.me\/'])
+    
+class TelegramChatHyperlinks(RegularExpressionWhiteList):
+    def __init__(self):
+        super().__init__(['https:\/\/t\.me\/joinchat\/'])
+
+class TelegramInvitationHyperlinks(RegularExpressionWhiteList):
+    def __init__(self):
+        # Not a chat, not a sticker, not a robot
+        super().__init__(['https:\/\/t\.me\/((?!joinchat|addstickers).(?![a-zA-Z0-9_]*\?start=).[a-zA-Z0-9_]*)'])
+        
+class TelegramBotHyperlinks(RegularExpressionWhiteList):
+    def __init__(self):
+        super().__init__(['https:\/\/t\.me\/([a-zA-Z0-9_]*)\?start='])
