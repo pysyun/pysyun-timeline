@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 # Removes all exact matches from a time-line according to the black list
 class BlackList:
