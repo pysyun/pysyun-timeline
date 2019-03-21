@@ -1,4 +1,5 @@
 import re
+import requests
 from urllib.parse import urlparse
 
 # Removes all exact matches from a time-line according to the black list
@@ -80,3 +81,31 @@ class TelegramInvitationPureHyperlinks(TelegramInvitationHyperlinks):
                     'value': segments
                 })
         return results
+
+class TelegramInvitationMetadata:
+
+    def process(self, links):
+        channels = []
+        for uri in links:
+            channel = {}
+            channel["uri"] = uri
+            file = requests.get(uri)
+            text = file.text
+            search = re.search('<div class="tgme_page_extra">([0-9 ]+)members', text)
+            if None != search:
+                channel["members"] = int(search.group(1).replace(' ', ''))
+            else:
+                channel["members"] = 0
+            search = re.search('([0-9 ]+)online<\/div>', text)
+            if None != search:
+                channel["online"] = int(search.group(1).replace(' ', ''))
+            else:
+                channel["online"] = 0
+            search = re.search('<div class="tgme_page_description">(.*?)<\/div>', text)
+            if None != search:
+                channel["description"] = search.group(1)
+            else:
+                channel["description"] = ''
+            channels.append(channel)
+        channels.sort(key=lambda x: x["members"], reverse=True)
+        return channels
