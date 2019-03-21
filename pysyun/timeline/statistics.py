@@ -1,3 +1,5 @@
+from statistics import median_low
+
 class MedianAggregateIndexes:
 
     def __init__(self, intervalCount):
