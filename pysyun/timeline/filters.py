@@ -109,3 +109,17 @@ class TelegramInvitationMetadata:
             channels.append(channel)
         channels.sort(key=lambda x: x["members"], reverse=True)
         return channels
+
+class DateRange:
+
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def process(self, timeLine):
+        newTimeLine = []
+        for i in range(len(timeLine)):
+            value = timeLine[i]
+            if self.start <= value['time'] and value['time'] <= self.end:
+                newTimeLine.append(value)
+        return newTimeLine
