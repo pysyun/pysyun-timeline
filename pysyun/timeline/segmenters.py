@@ -11,6 +11,7 @@ class CurrencyAbbreviations:
             results = re.findall(regularExpression, segment)
             if len(results) != 0:
                 results = set(results)
+                results = list(results)
                 # TODO: Пока не скажу, что здесь не так - потом скажу, но тут очень интересно
                 newTimeLine.append({
                     'time': timeLine[i]['time'],
