@@ -1,6 +1,14 @@
 from datetime import datetime
+
+# Matplotlib for simple charts
 import matplotlib.pyplot as plot
 from pysyun.timeline.statistics import MedianAggregateIndexes
+
+# Plotly for interactive charts
+import plotly.graph_objs as go
+# Switch Plotly to offline mode
+from plotly.offline import init_notebook_mode, iplot
+init_notebook_mode(connected=True)
 
 class DownsampledTimeLineChart:
 
@@ -43,3 +51,41 @@ class DownsampledTimeLineChart:
         ax.grid(True)
         # Data to display
         ax.plot(filteredDates, filteredValues)
+
+class InteractiveTimeLineChart:
+
+    def __init__(self, title, xTitle, yTitle):
+        self.traces = []
+        self.title = title
+        self.xTitle = xTitle
+        self.yTitle = yTitle
+    
+    # Renders one more time-line each time
+    def process(self, timeLine):
+        
+        # Extract values
+        values = []
+        for i in range(len(timeLine)):
+            values.append(timeLine[i]['value'])
+
+        # Extract dates and time-stamps
+        dateValues = []
+        for i in range(len(timeLine)):
+            seconds = timeLine[i]['time'] / 1000
+            dateValues.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
+            
+        # Add the current time-line to the chart traces
+        trace = go.Scatter(
+            x=dateValues,
+            y=values
+        )
+        self.traces.append(trace)
+        
+        # Render the chart
+        layout = go.Layout(
+            title=self.title, 
+            xaxis=dict(title=self.xTitle),
+            yaxis=dict(title=self.yTitle)
+        )
+        data = go.Figure(self.traces, layout=layout)
+        iplot(data)  
