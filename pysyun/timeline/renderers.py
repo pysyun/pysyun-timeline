@@ -61,7 +61,7 @@ class InteractiveTimeLineChart:
         self.yTitle = yTitle
     
     # Renders one more time-line each time
-    def process(self, timeLine):
+    def process(self, timeLineName, timeLine):
         
         # Extract values
         values = []
@@ -77,15 +77,18 @@ class InteractiveTimeLineChart:
         # Add the current time-line to the chart traces
         trace = go.Scatter(
             x=dateValues,
-            y=values
+            y=values,
+            name=timeLineName
         )
         self.traces.append(trace)
         
-        # Render the chart
-        layout = go.Layout(
-            title=self.title, 
-            xaxis=dict(title=self.xTitle),
-            yaxis=dict(title=self.yTitle)
-        )
-        data = go.Figure(self.traces, layout=layout)
-        iplot(data)  
+        if [] == timeLine:
+
+            # Render the chart
+            layout = go.Layout(
+                title=self.title, 
+                xaxis=dict(title=self.xTitle),
+                yaxis=dict(title=self.yTitle)
+            )
+            data = go.Figure(self.traces, layout=layout)
+            iplot(data)
