@@ -23,6 +23,10 @@ class EventCountAggregate:
         self.intervalCount = intervalCount
 
     def process(self, timeLine):
+
+        if 0 == len(timeLine):
+            return []        
+
         newTimeLine = []
         
         timeLine.sort(key=lambda value: value['time'])
