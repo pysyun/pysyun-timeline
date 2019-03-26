@@ -21,6 +21,24 @@ class BlackList:
                 })
         return results
 
+class WhiteList:
+
+    def __init__(self, values):
+        self.values = values
+
+    def process(self, timeLine):
+        results = []
+        for i in range(len(timeLine)):
+            segment = timeLine[i]['value']
+            segment = filter(lambda x: x in self.values, segment)
+            segment = list(segment)
+            if len(segment) != 0:
+                results.append ({
+                    'time': timeLine[i]['time'],
+                    'value': segment
+                })
+        return results    
+
 # Takes all regular expression matches from a time-line according to the regular expressions white list
 class RegularExpressionWhiteList:
     
