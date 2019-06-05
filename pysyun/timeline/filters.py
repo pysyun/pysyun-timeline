@@ -141,3 +141,26 @@ class DateRange:
             if self.start <= value['time'] and value['time'] <= self.end:
                 newTimeLine.append(value)
         return newTimeLine
+
+class ValueChangeIntervals:
+
+    def process(self, timeLine):
+
+        results = []
+
+        for index in range(len(timeLine)):
+            
+            time = timeLine[index]['time']
+            currentValue = timeLine[index]['value']
+            previousValue = currentValue
+            if index != 0:
+                previousValue = timeLine[index - 1]['value']
+
+            newValue = 0
+            if currentValue < previousValue:
+                newValue = -1
+            elif currentValue > previousValue:
+                newValue = 1
+            results.append({'time': time, 'value': newValue})
+
+        return results
