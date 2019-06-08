@@ -1,5 +1,8 @@
+import re
 import ssl
 import json
+import time
+import requests
 import urllib.request
 
 class GoogleObserver:
@@ -16,3 +19,25 @@ class GoogleObserver:
         with urllib.request.urlopen(uriString, context = sslContext) as url:
             data = json.loads(url.read().decode())
             return data
+
+class EthereumGasStation:
+
+    def process():
+
+        uri = 'https://ethgasstation.info/gasguzzlers.php'
+        file = requests.get(uri)
+        text = file.text
+
+        result = []
+        search = re.findall('https:\/\/etherscan.io\/address\/[a-zA-Z0-9_]*', text)
+
+        for index in search:
+            data = {
+                'time': int(time.time()),
+                'value': {
+                    'uri': index + '#contracts'
+                }
+            }
+            result.append(data)
+
+        return result
