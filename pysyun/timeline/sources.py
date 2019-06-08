@@ -41,3 +41,43 @@ class EthereumGasStation:
             result.append(data)
 
         return result
+
+class CVEIdentifiers:
+
+    def __readFile(self, url):
+        file = requests.get(url)
+        text = file.text
+        return text
+
+    def __restoreUris(self, fragments, baseUri, result):
+        for fragment in fragments:
+            url = baseUri + fragment
+            result.append(url)
+
+    def process(self):
+
+        result = []
+        
+        baseUri = 'https://www.cvedetails.com'
+        
+        # Load year URIs
+        yearUris = []
+        listingUri = 'https://www.cvedetails.com/browse-by-date.php'
+        fragments = re.findall('\/vulnerability-list\/year-[0-9]{4}\/vulnerabilities.html', self.__readFile(listingUri))
+        self.__restoreUris(fragments, baseUri, yearUris)
+
+        # Load CVE page URIs
+        pageUris = []
+        for uri in yearUris:
+            fragments = re.findall('(\/vulnerability-list.php\?[0-9a-zA-Z_=&;]+)(?:\"\t title=\"Go to page [0-9\">]+)', self.__readFile(uri))
+            self.__restoreUris(fragments, baseUri, pageUris)
+
+        # Load CVE items
+        for uri in pageUris:
+            fragments = re.findall('(?:[\<a-z0-9 =\"/]+)([0-9A-Z-]+)/(?:\")', self.__readFile(uri))
+            for identifier in fragments:
+                result.append({
+                    'id': identifier
+                }) 
+
+        return result
