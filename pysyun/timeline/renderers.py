@@ -92,3 +92,46 @@ class InteractiveTimeLineChart:
             )
             data = go.Figure(self.traces, layout=layout)
             iplot(data)
+
+class InteractiveScatterTimeLineChart:
+
+    def __init__(self, title, xTitle, yTitle):
+        self.traces = []
+        self.title = title
+        self.xTitle = xTitle
+        self.yTitle = yTitle
+    
+    # Renders one more time-line each time
+    def process(self, timeLineName, timeLine):
+        
+        # Extract values
+        values = []
+        for i in range(len(timeLine)):
+            values.append(timeLine[i]['value'])
+
+        # Extract dates and time-stamps
+        dateValues = []
+        for i in range(len(timeLine)):
+            seconds = timeLine[i]['time'] / 1000
+            dateValues.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
+            
+        # Add the current time-line to the chart traces
+        trace = go.Scatter(
+            x=dateValues,
+            y=values,
+            name=timeLineName,
+            # Display only markers not to fill empty intervals with lines
+            mode='markers'
+        )
+        self.traces.append(trace)
+        
+        if [] == timeLine:
+
+            # Render the chart
+            layout = go.Layout(
+                title=self.title, 
+                xaxis=dict(title=self.xTitle),
+                yaxis=dict(title=self.yTitle)
+            )
+            data = go.Figure(self.traces, layout=layout)
+            iplot(data)
