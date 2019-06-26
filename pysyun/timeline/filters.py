@@ -1,6 +1,15 @@
+# Python imports
 import re
 import requests
 from urllib.parse import urlparse
+
+# Data science imports
+from pandas import DataFrame
+from scipy.spatial.distance import pdist
+from scipy.cluster.hierarchy import *
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn import preprocessing
 
 # Removes all exact matches from a time-line according to the black list
 class BlackList:
@@ -162,5 +171,49 @@ class ValueChangeIntervals:
             elif currentValue > previousValue:
                 newValue = 1
             results.append({'time': time, 'value': newValue})
+
+        return results
+
+class KMeansClustering:
+          
+    def process(self, timeLine):
+        
+        # Convert to the data frame
+        data = {'time':[], 'value':[]}
+        for i in range(len(timeLine)):
+            data['time'].append(timeLine[i]['time'])
+            data['value'].append(timeLine[i]['value'])
+        data = DataFrame(data)
+        dataForClust = data.values
+        
+        # Pre-processing (scaling)
+        scaler = preprocessing.StandardScaler()
+        dataNorm = scaler.fit_transform(dataForClust)
+        
+        # Convert to the data frame
+        dataNorm = DataFrame(dataNorm, columns=['time', 'value'])
+        
+        # Eucledian distance
+        dataDist = pdist(dataNorm, 'euclidean')
+        
+        # Perform hierarchy clusterization
+        dataLinkage = linkage(dataDist, method='average')
+        
+        # The "elbow" method to evaluate optimal segment count
+        last = dataLinkage[-10:, 2]
+        acceleration = np.diff(last, 2)
+        acceleration_rev = acceleration[::-1]
+        k = acceleration_rev.argmax() + 2
+        
+        # Perform K-means clustering
+        km = KMeans(n_clusters=k).fit(dataNorm)
+        km = list(km.labels_ +1)
+        
+        results = []
+        for i in range(len(data)):
+          results.append({
+              'time': data['time'][i],
+              'value': km[i]
+          })
 
         return results
