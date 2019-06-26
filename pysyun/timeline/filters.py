@@ -39,14 +39,21 @@ class WhiteList:
         results = []
         for i in range(len(timeLine)):
             segment = timeLine[i]['value']
-            segment = filter(lambda x: x in self.values, segment)
-            segment = list(segment)
-            if len(segment) != 0:
-                results.append ({
-                    'time': timeLine[i]['time'],
-                    'value': segment
-                })
-        return results    
+            if isinstance(segment, int) or isinstance(segment, str):
+                if segment in self.values:
+                    results.append ({
+                        'time': timeLine[i]['time'],
+                        'value': segment
+                    })                
+            else:
+                segment = filter(lambda x: x in self.values, segment)
+                segment = list(segment)
+                if len(segment) != 0:
+                    results.append ({
+                        'time': timeLine[i]['time'],
+                        'value': segment
+                    })
+        return results     
 
 # Takes all regular expression matches from a time-line according to the regular expressions white list
 class RegularExpressionWhiteList:
