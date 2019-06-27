@@ -22,7 +22,7 @@ class GoogleObserver:
 
 class EthereumGasStation:
 
-    def process():
+    def process(self):
 
         uri = 'https://ethgasstation.info/gasguzzlers.php'
         file = requests.get(uri)
