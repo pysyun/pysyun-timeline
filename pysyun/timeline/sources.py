@@ -29,13 +29,15 @@ class EthereumGasStation:
         text = file.text
 
         result = []
-        search = re.findall('https:\/\/etherscan.io\/address\/[a-zA-Z0-9_]*', text)
+        searchUri = re.findall('https:\/\/etherscan.io\/address\/[a-zA-Z0-9_]*', text)
+        searchLoad = re.findall('(?:<td>)([0-9]+\.[0-9]+)(?:<\/td>)', text)
 
-        for index in search:
+        for index in range(len(searchUri)):
             data = {
                 'time': int(time.time()),
                 'value': {
-                    'uri': index + '#contracts'
+                    'uri': searchUri[index] + '#contracts',
+                    'load': searchLoad[index],
                 }
             }
             result.append(data)
