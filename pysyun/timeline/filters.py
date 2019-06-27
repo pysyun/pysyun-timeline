@@ -213,7 +213,7 @@ class KMeansClustering:
         k = acceleration_rev.argmax() + 2
         
         # Perform K-means clustering
-        km = KMeans(n_clusters=k).fit(dataNorm)
+        km = KMeans(n_clusters=k, n_init=10, random_state=1).fit(dataNorm)
         km = list(km.labels_ +1)
         
         results = []
