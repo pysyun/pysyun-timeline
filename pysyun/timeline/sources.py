@@ -83,3 +83,27 @@ class CVEIdentifiers:
                 }) 
 
         return result
+
+class CVEDescription:
+    
+    def __response(self, uri):
+      
+        session = requests.Session()
+        headers = {'accept' : '*/*', 
+                   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
+        
+        r = session.get(uri, headers=headers)
+        soup = bs(r.content, 'html.parser')
+        divs = soup.find_all('table', id ='cvssscorestable')
+        files = divs[0]
+        files = files.text
+        return files
+           
+    def process(self, timeLineIdentifiers):
+        
+        for i in range(len(timeLineIdentifiers)):
+            uri = 'https://www.cvedetails.com/cve/' + timeLineIdentifiers[i]['id']
+            description = self.__response(uri) 
+            timeLineIdentifiers[i]['description'] = description
+            
+        return timeLineIdentifiers
