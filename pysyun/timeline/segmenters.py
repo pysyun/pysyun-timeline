@@ -34,3 +34,23 @@ class Hyperlinks:
                     'value': results
                 })
         return newTimeLine
+
+class Words:
+
+    def process(self, timeLine):
+        newTimeLine = []
+        for i in range(len(timeLine)):
+
+            segment = timeLine[i]['value']
+            results = segment.split()
+
+            if 0 != len(results):
+
+                results = set(results)
+                results = list(results)
+                newTimeLine.append({
+                    'time': timeLine[i]['time'],
+                    'value': results
+                })
+
+        return newTimeLine
