@@ -44,7 +44,7 @@ class EthereumGasStation:
 
         return result
 
-class CVEIdentifiers:
+class CVEIdentifier:
 
     def __readFile(self, url):
         file = requests.get(url)
