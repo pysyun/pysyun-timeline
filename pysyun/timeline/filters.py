@@ -182,14 +182,16 @@ class ValueChangeIntervals:
         return results
 
 class KMeansClustering:
-          
+
+    def __init__(self, clusterCount = None):
+        self.clusterCount = clusterCount    
+    
     def process(self, timeLine):
         
         # Convert to the data frame
-        data = {'time':[], 'value':[]}
+        data = {'time':[]}
         for i in range(len(timeLine)):
             data['time'].append(timeLine[i]['time'])
-            data['value'].append(timeLine[i]['value'])
         data = DataFrame(data)
         dataForClust = data.values
         
@@ -198,29 +200,64 @@ class KMeansClustering:
         dataNorm = scaler.fit_transform(dataForClust)
         
         # Convert to the data frame
-        dataNorm = DataFrame(dataNorm, columns=['time', 'value'])
+        dataNorm = DataFrame(dataNorm, columns=['time'])
         
         # Eucledian distance
         dataDist = pdist(dataNorm, 'euclidean')
-        
+
         # Perform hierarchy clusterization
         dataLinkage = linkage(dataDist, method='average')
-        
+
         # The "elbow" method to evaluate optimal segment count
-        last = dataLinkage[-10:, 2]
-        acceleration = np.diff(last, 2)
-        acceleration_rev = acceleration[::-1]
-        k = acceleration_rev.argmax() + 2
+        if self.clusterCount is None:
+        
+            start = 1
+            before = 20
+          
+            samples = []
+            for k in range(start, before):
+                kmSamples = KMeans(n_clusters=k, n_init=before, random_state=1)
+                kmSamples.fit(dataLinkage)
+                samples.append(kmSamples.inertia_)
+        
+            x1, y1 = start, samples[0]
+            x2, y2 = (before - 1), samples[len(samples)-1]
+        
+            # Find the optimum cluster count
+            distances = []
+            for i in range(len(samples)):
+                x0 = i + start
+                y0 = samples[i]
+                numerator = abs((y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1)
+                denominator = math.sqrt((y2 - y1)**2 + (x2 - x1)**2)
+                distances.append(numerator / denominator)
+    
+            self.clusterCount = distances.index(max(distances)) + start
         
         # Perform K-means clustering
-        km = KMeans(n_clusters=k, n_init=10, random_state=1).fit(dataNorm)
+        km = KMeans(n_clusters=self.clusterCount, n_init=10, random_state=1).fit(dataNorm)
         km = list(km.labels_ +1)
-        
+
+        # Re-index cluster identifiers to make them sequential
+        reindexedClusters = []
+        value = 1
+        for j in range(len(km)):
+            if j != 0:
+                cluster = km[j]
+                previousCluster = km[j - 1]
+                if cluster == previousCluster:
+                    reindexedClusters.append(value)
+                else:
+                    value += 1
+                    reindexedClusters.append(value)
+            elif j == 0:
+                reindexedClusters.append(value)
+
         results = []
         for i in range(len(data)):
           results.append({
               'time': data['time'][i],
-              'value': km[i]
+              'value': reindexedClusters[i]
           })
 
         return results
