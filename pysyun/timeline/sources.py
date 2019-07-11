@@ -4,6 +4,7 @@ import json
 import time
 import requests
 import urllib.request
+from bs4 import BeautifulSoup as bs
 
 class GoogleObserver:
 
