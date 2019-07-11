@@ -262,3 +262,46 @@ class KMeansClustering:
           })
 
         return results
+
+class ClusterCentroid:
+
+    def process(self, timeLine, timeLineClusters):
+
+        # Extracting time-line values
+        data = {'value':[]}
+        for i in range(len(timeLine)):
+            data['value'].append(timeLine[i]['value']) 
+
+        # Look for cluster groups count from timeLineClusters
+        # Find interval start and end indexes for each group
+        clusters = []
+        timeLineLength = len(timeLineClusters)
+        for index in range(timeLineLength):
+            cluster = timeLineClusters[index]['value']
+            if index != 0:
+                previouscluster = timeLineClusters[index - 1]['value']
+                if cluster != previouscluster:
+                    if len(clusters) == 0:
+                        interval = [0, index]
+                        clusters.append(interval)
+                    else:
+                        interval = [(clusters[-1][-1]) + 1, index]
+                        clusters.append(interval)  
+                elif index == (timeLineLength - 1):
+                    interval = [(clusters[-1][-1]) + 1, timeLineLength - 1]
+                    clusters.append(interval)
+
+        # A new list containing cluster groups united by similarity for a given time span.
+        # Cluster groups contain sums of values of the cluster time span.
+        result = []
+        for i in range(len(clusters)):
+            first = clusters[i][0]
+            last = clusters[i][1]
+            timeLineCenter = int((timeLineClusters[first]['time'] + timeLineClusters[last]['time']) / 2)
+            total = sum(data['value'][first:last + 1])
+            result.append({
+                'time': timeLineCenter,
+                'value': total
+            })
+
+        return result
