@@ -305,3 +305,35 @@ class ClusterCentroid:
             })
 
         return result
+
+class Lowercase:
+    
+    def process(self, timeLine):
+        for j in range(len(timeLine)):
+            segment = timeLine[j]['value']
+            if isinstance(segment, int) or isinstance(segment, str):
+                segment = segment.lower()
+            else:
+                for k in range(len(segment)):
+                    segment[k] = segment[k].lower()
+            timeLine[j]['value'] = segment
+        return timeLine 
+    
+class CharacterBlackList:
+    
+    def __init__(self, substrings):
+        self.substrings = substrings
+
+    def process(self, timeLine):
+        for j in range(len(timeLine)):
+            segment = timeLine[j]['value']
+            if isinstance(segment, int) or isinstance(segment, str):
+                for k in range(len(self.substrings)):
+                    segment = segment.strip(self.substrings[k])
+                    print(segment, self.substrings[k])
+            else:
+                for i in range(len(segment)):
+                    for k in range(len(self.substrings)):
+                        segment[i] = segment[i].strip(self.substrings[k])
+            timeLine[j]['value'] = segment
+        return timeLine        
