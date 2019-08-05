@@ -337,3 +337,29 @@ class CharacterBlackList:
                         segment[i] = segment[i].strip(self.substrings[k])
             timeLine[j]['value'] = segment
         return timeLine        
+
+class LambdaProjection:
+    
+    def __init__(self, projection):
+        self.projection = projection
+        
+    def process(self, timeLine):
+        result = []
+        for i in range(len(timeLine)):
+            event = timeLine[i]
+            projection = self.projection(event)
+            if None != projection:
+                result.append(projection)
+            
+        return result
+    
+class JSON:
+    
+    def process(self, timeLine):
+        result = []
+        for i in range(len(timeLine)):
+            event = timeLine[i]
+            event["value"] = json.loads(event["value"])
+            result.append(event)
+            
+        return result
