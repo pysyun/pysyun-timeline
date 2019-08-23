@@ -364,3 +364,7 @@ class JSON:
             result.append(event)
             
         return result
+
+class Empty():
+    def process(self, timeLine):
+        return
