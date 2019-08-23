@@ -135,3 +135,7 @@ class InteractiveScatterTimeLineChart:
             )
             data = go.Figure(self.traces, layout=layout)
             iplot(data)
+
+class Console:
+    def process(self, timeLine):
+        print(timeLine)
