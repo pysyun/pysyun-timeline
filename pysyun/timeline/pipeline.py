@@ -2,6 +2,7 @@ import time
 
 from compute.graph.structure import Node
 from compute.graph.structure import Synapse
+from compute.graph.profile import ProfileNode
 
 class PipelineNode(Node):
 
