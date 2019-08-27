@@ -367,6 +367,18 @@ class JSON:
             
         return result
 
+class Limit:
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+    def process(self, timeLine):
+        return timeLine[self.start:self.end]
+
+class Count:
+    def process(self, timeLine):
+        print ('Count called:', len(timeLine))
+        return [len(timeLine)]
+
 class Empty():
     def process(self, timeLine):
         return
