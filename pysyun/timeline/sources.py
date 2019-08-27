@@ -5,6 +5,32 @@ import time
 import requests
 import urllib.request
 from bs4 import BeautifulSoup as bs
+from storage_timeline_client import Storage
+
+class StorageTimelineSchema:
+    def __init__(self, uri, schemaName):
+        self.schema = Storage(uri).schema(schemaName)
+    def process(self, empty):
+        result = []
+        timeLineNames = self.schema.list()
+        for timeLineName in timeLineNames:
+            result.append(self.schema.timeLine(timeLineName))
+        return result
+
+class StorageTimelineTimeline:
+    def __init__(self, uri, schemaName, timeLineName):
+        self.timeLine = Storage(uri).schema(schemaName).timeLine(timeLineName)
+    def process(self, empty):
+        return [self.timeLine]
+
+class StorageTimelineStrings:
+    def process(self, timeLines):
+        results = []
+        cumulation = Add()
+        for timeLine in timeLines:
+            values = timeLine.allStrings()
+            results = cumulation.process(values)
+        return results
 
 class GoogleObserver:
 
