@@ -6,6 +6,7 @@ import requests
 import urllib.request
 from bs4 import BeautifulSoup as bs
 from storage_timeline_client import Storage
+from pysyun.timeline.algebra impor Add
 
 class StorageTimelineSchema:
     def __init__(self, uri, schemaName):
