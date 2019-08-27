@@ -2,8 +2,10 @@
 import re
 import json
 import math
+import time
 import requests
 from urllib.parse import urlparse
+from datetime import datetime, timedelta
 
 # Data science imports
 from pandas import DataFrame
@@ -368,3 +370,37 @@ class JSON:
 class Empty():
     def process(self, timeLine):
         return
+
+class LastTimeFrame:
+    def process(self, timeLine):
+        newTimeLine = []
+        for i in range(len(timeLine)):
+            value = timeLine[i]
+            if self.start <= value['time']:
+                newTimeLine.append(value)
+        return newTimeLine
+    def startTime(self, delta):
+        currentDate = datetime.today()
+        currentDate = datetime(currentDate.year, currentDate.month, currentDate.day)
+        currentDate = currentDate - delta
+        self.start = time.mktime(currentDate.timetuple()) * 1000
+
+class LastMinutes(LastTimeFrame):
+    def __init__(self, count):
+        self.startTime(timedelta(minutes = count))
+        
+class LastHours(LastTimeFrame):
+    def __init__(self, count):
+        self.startTime(timedelta(hours = count))
+        
+class LastDays(LastTimeFrame):
+    def __init__(self, count):
+        self.startTime(timedelta(days = count))
+        
+class LastWeeks(LastTimeFrame):
+    def __init__(self, count):
+        self.startTime(timedelta(weeks = count))
+        
+class LastMonths(LastTimeFrame):
+    def __init__(self, count):
+        self.startTime(timedelta(months = count))
