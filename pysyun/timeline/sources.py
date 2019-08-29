@@ -87,44 +87,42 @@ class EthereumGasStation:
 
         return result
 
-class CVEIdentifier:
-
-    def __readFile(self, url):
+class CVEBase:
+    baseUri = 'https://www.cvedetails.com'
+    def readFile(self, url):
         file = requests.get(url)
         text = file.text
         return text
-
-    def __restoreUris(self, fragments, baseUri, result):
+    def restoreUris(self, fragments, baseUri, result):
         for fragment in fragments:
             url = baseUri + fragment
             result.append(url)
 
-    def process(self):
-
+class CVEIdentifierYear(CVEBase):
+    def process(self, items):
         result = []
-        
-        baseUri = 'https://www.cvedetails.com'
-        
-        # Load year URIs
-        yearUris = []
         listingUri = 'https://www.cvedetails.com/browse-by-date.php'
-        fragments = re.findall('\/vulnerability-list\/year-[0-9]{4}\/vulnerabilities.html', self.__readFile(listingUri))
-        self.__restoreUris(fragments, baseUri, yearUris)
+        fragments = re.findall('\/vulnerability-list\/year-[0-9]{4}\/vulnerabilities.html', self.readFile(listingUri))
+        self.restoreUris(fragments, self.baseUri, result)
+        return result
 
-        # Load CVE page URIs
-        pageUris = []
-        for uri in yearUris:
-            fragments = re.findall('(\/vulnerability-list.php\?[0-9a-zA-Z_=&;]+)(?:\"\t title=\"Go to page [0-9\">]+)', self.__readFile(uri))
-            self.__restoreUris(fragments, baseUri, pageUris)
+class CVEIdentifierPage(CVEBase):
+    def process(self, items):
+        result = []
+        for uri in items:
+            fragments = re.findall('(\/vulnerability-list.php\?[0-9a-zA-Z_=&;]+)(?:\"\t title=\"Go to page [0-9\">]+)', self.readFile(uri))
+            self.restoreUris(fragments, self.baseUri, result)
+        return result
 
-        # Load CVE items
-        for uri in pageUris:
-            fragments = re.findall('(?:[\<a-z0-9 =\"/]+)([0-9A-Z-]+)/(?:\")', self.__readFile(uri))
+class CVEIdentifier(CVEBase):
+    def process(self, items):
+        result = []
+        for uri in items:
+            fragments = re.findall('(?:[\<a-z0-9 =\"/]+)([0-9A-Z-]+)/(?:\")', self.readFile(uri))
             for identifier in fragments:
                 result.append({
                     'id': identifier
                 }) 
-
         return result
 
 class CVEDescription:
