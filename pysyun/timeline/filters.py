@@ -162,6 +162,20 @@ class DateRange:
                 newTimeLine.append(value)
         return newTimeLine
 
+class InverseDateRange:
+
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def process(self, timeLine):
+        newTimeLine = []
+        for i in range(len(timeLine)):
+            value = timeLine[i]
+            if value['time'] < self.start and self.end > value['time']:
+                newTimeLine.append(value)
+        return newTimeLine
+
 class ValueChangeIntervals:
 
     def process(self, timeLine):
