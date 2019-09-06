@@ -390,7 +390,6 @@ class Limit:
 
 class Count:
     def process(self, timeLine):
-        print ('Count called:', len(timeLine))
         return [len(timeLine)]
 
 class Empty():
