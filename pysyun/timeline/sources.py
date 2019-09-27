@@ -39,7 +39,7 @@ class GoogleObserver:
         self.storageUri = storageUri
         self.kernelIdentifier = kernelIdentifier
 
-    def process(self):
+    def process(self, formalArgument):
         sslContext = ssl.create_default_context();
         sslContext.check_hostname = False
         sslContext.verify_mode = ssl.CERT_NONE
