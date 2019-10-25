@@ -1,4 +1,6 @@
-class ChartNode(Node):
+from compute.graph.structure import Node
+
+class InteractiveTimeLineChartNode(Node):
 
     __arguments = []
     __chart = None
