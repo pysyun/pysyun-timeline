@@ -29,10 +29,13 @@ class InteractiveTimeLineChartNode(Node):
                     self.__arguments += data
 
     def process(self):
+
+        if '' == self.__projection:
+            self.__chart.process(self.__projection, [])
+            return
+
         data = self.read()
         filteredResult = WhiteList([self.__projection]).process(data)
         filteredResult = EventCountAggregate(52).process(filteredResult)
-        if '' == self.__projection:
-            self.__chart.process(self.__projection, [])
-        elif 0 < len(filteredResult):
+        if 0 < len(filteredResult):
             self.__chart.process(self.__projection, filteredResult)
