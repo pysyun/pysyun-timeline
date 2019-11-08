@@ -32,4 +32,7 @@ class InteractiveTimeLineChartNode(Node):
         data = self.read()
         filteredResult = WhiteList([self.__projection]).process(data)
         filteredResult = EventCountAggregate(52).process(filteredResult)
-        self.__chart.process(self.__projection, filteredResult)
+        if 0 < len(filteredResult):
+            self.__chart.process(self.__projection, filteredResult)
+        else if '' == self.__projection:
+            self.__chart.process(self.__projection, [])
