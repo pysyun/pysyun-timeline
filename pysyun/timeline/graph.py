@@ -24,7 +24,7 @@ class InteractiveTimeLineChartNode(Node):
             if 0 < len(data):
                 first = data[0]
                 if isinstance(first, str):
-                    self.__projection = first 
+                    self.__projection = first
                 else:
                     self.__arguments += data
 
@@ -32,5 +32,4 @@ class InteractiveTimeLineChartNode(Node):
         data = self.read()
         filteredResult = WhiteList([self.__projection]).process(data)
         filteredResult = EventCountAggregate(52).process(filteredResult)
-        if 0 < len(filteredResult) or '' == self.__projection:
-            self.__chart.process(self.__projection, filteredResult)
+        self.__chart.process(self.__projection, filteredResult)
