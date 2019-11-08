@@ -34,5 +34,5 @@ class InteractiveTimeLineChartNode(Node):
         filteredResult = EventCountAggregate(52).process(filteredResult)
         if 0 < len(filteredResult):
             self.__chart.process(self.__projection, filteredResult)
-        elseif '' == self.__projection:
+        elif '' == self.__projection:
             self.__chart.process(self.__projection, [])
