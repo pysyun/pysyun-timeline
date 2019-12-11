@@ -29,8 +29,11 @@ class StorageTimelineStrings:
         results = []
         cumulation = Add()
         for timeLine in timeLines:
-            values = timeLine.allStrings()
-            results = cumulation.process(values)
+            try:
+                values = timeLine.allStrings()
+                results = cumulation.process(values)
+            except:
+                print("Unable to fetch data from Storage.Timeline", timeLine.schema, timeLine.name)
         return results
 
 class GoogleObserver:
