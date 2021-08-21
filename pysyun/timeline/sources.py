@@ -151,3 +151,58 @@ class CVEDescription:
             timeLineIdentifiers[i]['description'] = description
             
         return timeLineIdentifiers
+
+class CoinMarketCapList:
+    
+    def __init__(self, page):
+        self.page = page
+    
+    def __response(self, uri):
+        session = requests.Session()
+        headers = {'accept' : '*/*', 
+                   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
+        request = session.get(uri, headers=headers)
+        document = bs(request.content, 'html.parser')
+        return document
+    
+    def __parse_number(self, value):
+        value = str.replace(value, ",", "")
+        value = str.replace(value, "$", "")
+        return float(value)
+    
+    def __parse(self, document):
+        elements = document.select('.cmc-table tr')
+        timeLine = []
+        timeStamp = int(time.time())
+        exceptionCounter = 0
+        for element in elements:
+            try:
+                soup = bs(str(element), 'html.parser')
+                symbol = soup.select('.coin-item-symbol')[0].text
+                price = soup.select('td:nth-child(4)')[0].text
+                price = self.__parse_number(price)
+                capitalization = soup.select('td:nth-child(7) span')[1].text
+                capitalization = self.__parse_number(capitalization)
+                circulatingSupply = soup.select('td:nth-child(9)')[0].text
+                circulatingSupply = str.replace(circulatingSupply, symbol, "")
+                circulatingSupply = self.__parse_number(circulatingSupply)
+                value = {
+                    "symbol": symbol,
+                    "price": price, 
+                    "capitalization": capitalization, 
+                    "circulatingSupply": circulatingSupply
+                }
+                data = {
+                    "time": timeStamp,
+                    "value": value
+                }
+                timeLine.append(data)
+            except Exception:
+                exceptionCounter = exceptionCounter + 1
+        return timeLine
+           
+    def process(self):
+        uri = 'https://coinmarketcap.com/?page=' + str(self.page)
+        document = self.__response(uri)
+        timeLine = self.__parse(document)
+        return timeLine
