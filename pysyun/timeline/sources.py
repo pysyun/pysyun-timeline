@@ -206,3 +206,48 @@ class CoinMarketCapList:
         document = self.__response(uri)
         timeLine = self.__parse(document)
         return timeLine
+
+
+class CopyAIAPI:
+
+  def __init__(self, token, project_identifier, product_identifier):
+    self.token = token
+    self.project_identifier = project_identifier
+    self.product_identifier = product_identifier
+
+  def uri(self):
+    return "https://api.copy.ai/v1/text-gen/generate"
+
+  def headers(self):
+    return {
+      'accept': "application/json, text/plain, */*",
+      'content-type': "application/json",
+      'user-agent': "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+      'referer': "https://app.copy.ai/",
+      'accept-language': "en-US,en;q=0.9",
+      'cookie': "UserJWT={0};".format(self.token)
+    }
+
+  def data(self, name, description, tone):
+    value = {
+      "projectId": self.project_identifier,
+      "toolKey": self.product_identifier,
+      "promptParams": {
+          "name": name,
+          "description": description,
+          "tone": tone
+      },
+      "inputLang": "EN-US",
+      "outputLang": "EN-US",
+      "supercharge": False
+    }
+    return json.dumps(value)
+
+  def process(self, data):
+    results = []
+    for item in data:
+      response = requests.post(self.uri(), headers=self.headers(), data=self.data(item["name"], item["description"], item["tone"]))
+      response = json.loads(response.text)
+      response = response["data"]["choices"]
+      results.append(response)
+    return results
