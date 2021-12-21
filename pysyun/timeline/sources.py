@@ -208,7 +208,7 @@ class CoinMarketCapList:
         return timeLine
 
 
-class CopyAIAPI:
+class CopyAI:
 
   def __init__(self, token, project_identifier, product_identifier):
     self.token = token
