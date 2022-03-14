@@ -228,7 +228,7 @@ class CopyAI:
       'cookie': "UserJWT={0};".format(self.token)
     }
 
-  def data(self, name, description, tone):
+  def data(self, name, description, tone, input_language, output_language):
     value = {
       "projectId": self.project_identifier,
       "toolKey": self.product_identifier,
@@ -237,8 +237,8 @@ class CopyAI:
           "description": description,
           "tone": tone
       },
-      "inputLang": "EN-US",
-      "outputLang": "EN-US",
+      "inputLang": input_language,
+      "outputLang": output_language,
       "supercharge": False
     }
     return json.dumps(value)
@@ -246,7 +246,7 @@ class CopyAI:
   def process(self, data):
     results = []
     for item in data:
-      response = requests.post(self.uri(), headers=self.headers(), data=self.data(item["name"], item["description"], item["tone"]))
+      response = requests.post(self.uri(), headers=self.headers(), data=self.data(item["name"], item["description"], item["tone"], item["input_language"], item["output_language"]))
       response = json.loads(response.text)
       response = response["data"]["choices"]
       results.append(response)
