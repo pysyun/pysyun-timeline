@@ -163,7 +163,7 @@ class ResourceLimit:
     else:
       if "last" in condition:
         self.state = {
-            "last": ResourceLimit.__now()
+            "last": 0
         }
       elif "single" in condition:
         self.state = {
