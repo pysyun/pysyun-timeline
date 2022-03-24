@@ -1,3 +1,8 @@
+import os
+import json 
+import os.path
+import time
+
 from datetime import datetime
 
 # Matplotlib for simple charts
@@ -139,3 +144,55 @@ class InteractiveScatterTimeLineChart:
 class Console:
     def process(self, timeLine):
         print(timeLine)
+
+
+class ResourceLimit:
+
+  def __init__(self, state_file_name, condition):
+
+    self.state_file_name = state_file_name
+    self.condition = condition
+
+    # Try to load prior state
+    if os.path.exists(state_file_name):
+      file = open(state_file_name)
+      self.state = json.load(file)
+      file.close()
+    else:
+      self.state = {
+          "last": ResourceLimit.__now()
+      }
+      self.__save()
+
+  def process(self, data):
+
+      if 0 < len(data):
+        atom = data[0]
+        if "trigger" in atom:
+
+          # Try to process available conditions
+          condition = self.condition
+          if "last" in condition:
+            condition = condition["last"]
+            if "lessThan" in condition:
+
+              # "Less than given number" condition
+              if condition["lessThan"] < ResourceLimit.__now() - self.state["last"]:
+                self.__exit()
+
+        elif "update" in atom:
+
+          # State update and saving
+          self.state["last"] = ResourceLimit.__now()
+          self.__save()
+
+  def __save(self):
+      with open(self.state_file_name, 'w') as file:
+        json.dump(self.state, file)
+
+  def __now():
+    return int(round(time.time() * 1000))
+
+  def __exit(self):
+    os.remove(self.state_file_name)
+    exit()
