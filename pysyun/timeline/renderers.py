@@ -184,7 +184,6 @@ class ResourceLimit:
 
               # "Less than given number" condition
               if condition["lessThan"] > ResourceLimit.__now() - self.state["last"]:
-                os.remove(self.state_file_name)
                 exit()
 
           elif "single" in condition:
