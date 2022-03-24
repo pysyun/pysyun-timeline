@@ -189,6 +189,8 @@ class ResourceLimit:
           elif "single" in condition:
             if os.path.exists(self.state_file_name):
               exit()
+            else:
+              self.__save()
 
         elif "release" in atom:
 
