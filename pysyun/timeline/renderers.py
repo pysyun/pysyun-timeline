@@ -161,16 +161,20 @@ class ResourceLimit:
       self.state = json.load(file)
       file.close()
     else:
-      self.state = {
-          "last": ResourceLimit.__now()
-      }
-      self.__save()
+      if "last" in condition:
+        self.state = {
+            "last": ResourceLimit.__now()
+        }
+      elif "single" in condition:
+        self.state = {
+            "single": True
+        }
 
   def process(self, data):
 
       if 0 < len(data):
         atom = data[0]
-        if "trigger" in atom:
+        if "enter" in atom:
 
           # Try to process available conditions
           condition = self.condition
@@ -180,13 +184,22 @@ class ResourceLimit:
 
               # "Less than given number" condition
               if condition["lessThan"] < ResourceLimit.__now() - self.state["last"]:
-                self.__exit()
+                os.remove(self.state_file_name)
+                exit()
 
-        elif "update" in atom:
+          elif "single" in condition:
+            if os.path.exists(self.state_file_name):
+              exit()
+
+        elif "release" in atom:
 
           # State update and saving
-          self.state["last"] = ResourceLimit.__now()
-          self.__save()
+          if "last" in self.state:
+            self.state["last"] = ResourceLimit.__now()
+            self.__save()
+          elif "single" in self.state:
+            if os.path.exists(self.state_file_name):
+              os.remove(self.state_file_name)
 
   def __save(self):
       with open(self.state_file_name, 'w') as file:
@@ -194,7 +207,3 @@ class ResourceLimit:
 
   def __now():
     return int(round(time.time() * 1000))
-
-  def __exit(self):
-    os.remove(self.state_file_name)
-    exit()
