@@ -3,6 +3,8 @@ import json
 import os.path
 import time
 
+from sys import exit
+
 from datetime import datetime
 
 # Matplotlib for simple charts
