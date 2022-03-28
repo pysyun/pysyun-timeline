@@ -2,8 +2,7 @@ import os
 import json 
 import os.path
 import time
-
-from sys import exit
+import psutil
 
 from datetime import datetime
 
@@ -184,11 +183,11 @@ class ResourceLimit:
 
               # "Less than given number" condition
               if condition["lessThan"] > ResourceLimit.__now() - self.state["last"]:
-                exit()
+                ResourceLimit.__exit()
 
           elif "single" in condition:
             if os.path.exists(self.state_file_name):
-              exit()
+              ResourceLimit.__exit()
             else:
               self.__save()
 
@@ -208,3 +207,8 @@ class ResourceLimit:
 
   def __now():
     return int(round(time.time() * 1000))
+
+  def __exit():
+    pid = os.getpid()
+    process = psutil.Process(pid)
+    process.terminate()
