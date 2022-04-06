@@ -55,7 +55,7 @@ class GoogleObserver:
         ssl_context.verify_mode = ssl.CERT_NONE
         uri_string = self.storageUri + '/api/event/list?kernelIdentifier=' + self.kernelIdentifier
         if self.from_timestamp is not None:
-            uri_string += "&from=" + self.from_timestamp
+            uri_string += "&from=" + str(self.from_timestamp)
         with urllib.request.urlopen(uri_string, context=ssl_context) as url:
             data = json.loads(url.read().decode())
             return data
