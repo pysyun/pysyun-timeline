@@ -287,5 +287,5 @@ class CopyAIReference:
           response = requests.post(self.uri, json.dumps(item), headers={"Content-type": "application/json"})
           print(response)
           response = json.loads(response.text)
-          results.append(response)
+          results += response
         return results
