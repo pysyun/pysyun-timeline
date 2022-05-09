@@ -283,9 +283,7 @@ class CopyAIReference:
     def process(self, data):
         results = []
         for item in data:
-          print(json.dumps(item))
           response = requests.post(self.uri, json.dumps(item), headers={"Content-type": "application/json"})
-          print(response)
           response = json.loads(response.text)
           results += response
         return results
