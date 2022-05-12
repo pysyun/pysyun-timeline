@@ -170,7 +170,9 @@ class ResourceLimit:
             self.state = json.load(file)
             file.close()
         else:
-            if "last" in condition:
+            if callable(self.condition):
+                pass
+            elif "last" in condition:
                 self.state = {
                     "last": 0
                 }
