@@ -4,4 +4,7 @@ pandas
 scipy
 sklearn
 beautifulsoup4
+plotly
+matplotlib
+psutil
 git+https://github.com/vitche/python-storage-timeline-client.git

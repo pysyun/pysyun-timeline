@@ -1,5 +1,5 @@
 import os
-import json 
+import json
 import os.path
 import time
 import psutil
@@ -14,40 +14,44 @@ from pysyun.timeline.statistics import MedianAggregateIndexes
 import plotly.graph_objs as go
 # Switch Plotly to offline mode
 from plotly.offline import init_notebook_mode, iplot
-init_notebook_mode(connected=True)
+try:
+    init_notebook_mode(connected=True)
+except Exception:
+    pass
+
 
 class DownsampledTimeLineChart:
 
-    def __init__(self, intervalCount):
-        self.intervalCount = intervalCount
-    
-    def process(self, timeLine):
+    def __init__(self, interval_count):
+        self.intervalCount = interval_count
+
+    def process(self, time_line):
 
         # Sort the time-line by time-stamps
-        timeLine.sort(key=lambda value: value['time'])
+        time_line.sort(key=lambda value: value['time'])
 
         # Extract values
         values = []
-        for i in range(len(timeLine)):
-            values.append(timeLine[i]['value'])
+        for i in range(len(time_line)):
+            values.append(time_line[i]['value'])
 
         # Extract dates and time-stamps
-        timeValues = []
-        dateValues = []
-        for i in range(len(timeLine)):
-            seconds = timeLine[i]['time'] / 1000
-            timeValues.append(seconds)
-            dateValues.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
+        time_values = []
+        date_values = []
+        for i in range(len(time_line)):
+            seconds = time_line[i]['time'] / 1000
+            time_values.append(seconds)
+            date_values.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
 
         # Group the time-line into intervals by median
-        indexes = MedianAggregateIndexes(self.intervalCount).process(timeValues)
+        indexes = MedianAggregateIndexes(self.intervalCount).process(time_values)
 
         # Projecting median indexes into dates and values
-        filteredValues = []
-        filteredDates = []
+        filtered_values = []
+        filtered_dates = []
         for i in indexes:
-            filteredValues.append(values[i])
-            filteredDates.append(dateValues[i])
+            filtered_values.append(values[i])
+            filtered_dates.append(date_values[i])
 
         # Render the chart
         fig, ax = plot.subplots(figsize=(20, 10))
@@ -56,95 +60,96 @@ class DownsampledTimeLineChart:
         # Display the grid
         ax.grid(True)
         # Data to display
-        ax.plot(filteredDates, filteredValues)
+        ax.plot(filtered_dates, filtered_values)
+
 
 class InteractiveTimeLineChart:
 
-    def __init__(self, title, xTitle, yTitle):
+    def __init__(self, title, x_title, y_title):
         self.traces = []
         self.title = title
-        self.xTitle = xTitle
-        self.yTitle = yTitle
-    
+        self.xTitle = x_title
+        self.yTitle = y_title
+
     # Renders one more time-line each time
-    def process(self, timeLineName, timeLine):
-        
+    def process(self, time_line_name, time_line):
+
         # Extract values
         values = []
-        for i in range(len(timeLine)):
-            values.append(timeLine[i]['value'])
+        for i in range(len(time_line)):
+            values.append(time_line[i]['value'])
 
         # Extract dates and time-stamps
-        dateValues = []
-        for i in range(len(timeLine)):
-            seconds = timeLine[i]['time'] / 1000
-            dateValues.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
-            
+        date_values = []
+        for i in range(len(time_line)):
+            seconds = time_line[i]['time'] / 1000
+            date_values.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
+
         # Add the current time-line to the chart traces
         trace = go.Scatter(
-            x=dateValues,
+            x=date_values,
             y=values,
-            name=timeLineName
+            name=time_line_name
         )
         self.traces.append(trace)
-        
-        if [] == timeLine:
 
+        if not time_line:
             # Render the chart
             layout = go.Layout(
-                title=self.title, 
+                title=self.title,
                 xaxis=dict(title=self.xTitle),
                 yaxis=dict(title=self.yTitle)
             )
             data = go.Figure(self.traces, layout=layout)
             iplot(data)
 
+
 class InteractiveScatterTimeLineChart:
 
-    def __init__(self, title, xTitle, yTitle):
+    def __init__(self, title, x_title, y_title):
         self.traces = []
         self.title = title
-        self.xTitle = xTitle
-        self.yTitle = yTitle
-    
+        self.xTitle = x_title
+        self.yTitle = y_title
+
     # Renders one more time-line each time
-    def process(self, timeLineName, timeLine):
-        
+    def process(self, time_line_name, time_line):
+
         # Extract values
         values = []
-        for i in range(len(timeLine)):
-            values.append(timeLine[i]['value'])
+        for i in range(len(time_line)):
+            values.append(time_line[i]['value'])
 
         # Extract dates and time-stamps
-        dateValues = []
-        for i in range(len(timeLine)):
-            seconds = timeLine[i]['time'] / 1000
-            dateValues.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
-            
+        date_values = []
+        for i in range(len(time_line)):
+            seconds = time_line[i]['time'] / 1000
+            date_values.append(datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M'))
+
         # Add the current time-line to the chart traces
         trace = go.Scatter(
-            x=dateValues,
+            x=date_values,
             y=values,
-            name=timeLineName,
+            name=time_line_name,
             # Display only markers not to fill empty intervals with lines
             mode='markers'
         )
         self.traces.append(trace)
-        
-        if [] == timeLine:
 
+        if not time_line:
             # Render the chart
             layout = go.Layout(
-                title=self.title, 
+                title=self.title,
                 xaxis=dict(title=self.xTitle),
                 yaxis=dict(title=self.yTitle)
             )
             data = go.Figure(self.traces, layout=layout)
             iplot(data)
 
+
 class Console:
-    def process(self, timeLine):
-        print(timeLine)
+    def process(self, time_line):
+        print(time_line)
 
 
 class ResourceLimitAction:
