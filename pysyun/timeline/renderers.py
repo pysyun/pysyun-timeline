@@ -147,68 +147,79 @@ class Console:
         print(timeLine)
 
 
+class ResourceLimitAction:
+
+    @staticmethod
+    def exit():
+        pid = os.getpid()
+        process = psutil.Process(pid)
+        process.terminate()
+
+
 class ResourceLimit:
 
-  def __init__(self, state_file_name, condition):
+    def __init__(self, state_file_name, condition, action=ResourceLimitAction.exit):
 
-    self.state_file_name = state_file_name
-    self.condition = condition
+        self.state_file_name = state_file_name
+        self.condition = condition
+        self.action = action
 
-    # Try to load prior state
-    if os.path.exists(state_file_name):
-      file = open(state_file_name)
-      self.state = json.load(file)
-      file.close()
-    else:
-      if "last" in condition:
-        self.state = {
-            "last": 0
-        }
-      elif "single" in condition:
-        self.state = {
-            "single": True
-        }
+        # Try to load prior state
+        if os.path.exists(state_file_name):
+            file = open(state_file_name)
+            self.state = json.load(file)
+            file.close()
+        else:
+            if callable(self.condition):
+                pass
+            elif "last" in condition:
+                self.state = {
+                    "last": 0
+                }
+            elif "single" in condition:
+                self.state = {
+                    "single": True
+                }
 
-  def process(self, data):
+    def process(self, data):
 
-      if 0 < len(data):
-        atom = data[0]
-        if "enter" in atom:
+        if 0 < len(data):
+            atom = data[0]
+            if "enter" in atom:
 
-          # Try to process available conditions
-          condition = self.condition
-          if "last" in condition:
-            condition = condition["last"]
-            if "lessThan" in condition:
+                # Try to process available conditions
+                condition = self.condition
+                if callable(self.condition):
+                    if self.condition():
+                        self.action()
+                elif "last" in condition:
+                    condition = condition["last"]
+                    if "lessThan" in condition:
 
-              # "Less than given number" condition
-              if condition["lessThan"] > ResourceLimit.__now() - self.state["last"]:
-                ResourceLimit.__exit()
+                        # "Less than given number" condition
+                        if condition["lessThan"] > ResourceLimit.__now() - self.state["last"]:
+                            self.action()
 
-          elif "single" in condition:
-            if os.path.exists(self.state_file_name):
-              ResourceLimit.__exit()
-            else:
-              self.__save()
+                elif "single" in condition:
+                    if os.path.exists(self.state_file_name):
+                        self.action()
+                    else:
+                        self.__save()
 
-        elif "release" in atom:
+            elif "release" in atom:
 
-          # State update and saving
-          if "last" in self.state:
-            self.state["last"] = ResourceLimit.__now()
-            self.__save()
-          elif "single" in self.state:
-            if os.path.exists(self.state_file_name):
-              os.remove(self.state_file_name)
+                # State update and saving
+                if "last" in self.state:
+                    self.state["last"] = ResourceLimit.__now()
+                    self.__save()
+                elif "single" in self.state:
+                    if os.path.exists(self.state_file_name):
+                        os.remove(self.state_file_name)
 
-  def __save(self):
-      with open(self.state_file_name, 'w') as file:
-        json.dump(self.state, file)
+    def __save(self):
+        with open(self.state_file_name, 'w') as file:
+            json.dump(self.state, file)
 
-  def __now():
-    return int(round(time.time() * 1000))
-
-  def __exit():
-    pid = os.getpid()
-    process = psutil.Process(pid)
-    process.terminate()
+    @staticmethod
+    def __now():
+        return int(round(time.time() * 1000))

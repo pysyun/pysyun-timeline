@@ -3,9 +3,8 @@ import ssl
 import json
 import time
 import requests
-from pymongo import MongoClient, DESCENDING
 import urllib.request
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 from storage_timeline_client import Storage
 from pysyun.timeline.algebra import Add
 
@@ -156,7 +155,7 @@ class CVEDescription:
                                  'Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
 
         r = session.get(uri, headers=headers)
-        soup = BeautifulSoup(r.content, 'html.parser')
+        soup = bs(r.content, 'html.parser')
         divs = soup.find_all('table', id='cvssscorestable')
         files = divs[0]
         files = files.text
@@ -182,7 +181,7 @@ class CoinMarketCapList:
                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                                  'Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
         request = session.get(uri, headers=headers)
-        document = BeautifulSoup(request.content, 'html.parser')
+        document = bs(request.content, 'html.parser')
         return document
 
     def __parse_number(self, value):
@@ -197,7 +196,7 @@ class CoinMarketCapList:
         exception_counter = 0
         for element in elements:
             try:
-                soup = BeautifulSoup(str(element), 'html.parser')
+                soup = bs(str(element), 'html.parser')
                 symbol = soup.select('.coin-item-symbol')[0].text
                 price = soup.select('td:nth-child(4)')[0].text
                 price = self.__parse_number(price)
@@ -322,3 +321,17 @@ class MongoDBRecentEventsCollection:
                     'value': event
                 })
             return results
+
+
+class CopyAIReference:
+
+    def __init__(self, uri):
+        self.uri = uri
+
+    def process(self, data):
+        results = []
+        for item in data:
+          response = requests.post(self.uri, json.dumps(item), headers={"Content-type": "application/json"})
+          response = json.loads(response.text)
+          results += response
+        return results
