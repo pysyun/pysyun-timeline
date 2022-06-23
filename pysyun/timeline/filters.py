@@ -15,6 +15,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn import preprocessing
 
+
 # Removes all exact matches from a time-line according to the black list
 class BlackList:
     
@@ -33,6 +34,7 @@ class BlackList:
                     'value': segment
                 })
         return results
+
 
 class WhiteList:
 
@@ -59,6 +61,7 @@ class WhiteList:
                     })
         return results     
 
+
 # Takes all regular expression matches from a time-line according to the regular expressions white list
 class RegularExpressionWhiteList:
     
@@ -80,26 +83,31 @@ class RegularExpressionWhiteList:
                 })
         return results
 
+
 # Takes all Telegram hyperlinks
 class TelegramHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/'])
+
 
 # Takes all Telegram group chat hyperlinks
 class TelegramChatHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/joinchat\/'])
 
+
 # Takes all Telegram invitation hyperlinks
 class TelegramInvitationHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         # Not a chat, not a sticker, not a robot
         super().__init__(['https:\/\/t\.me\/((?!joinchat|addstickers).(?![a-zA-Z0-9_]*\?start=).[a-zA-Z0-9_]*)'])
-        
+
+
 # Takes all Telegram bot hyperlinks
 class TelegramBotHyperlinks(RegularExpressionWhiteList):
     def __init__(self):
         super().__init__(['https:\/\/t\.me\/([a-zA-Z0-9_]*)\?start='])
+
 
 # Takes all Telegram invitation hyperlinks and removes additional parameters from them
 class TelegramInvitationPureHyperlinks(TelegramInvitationHyperlinks):
@@ -119,6 +127,7 @@ class TelegramInvitationPureHyperlinks(TelegramInvitationHyperlinks):
                     'value': segments
                 })
         return results
+
 
 class TelegramInvitationMetadata:
 
@@ -148,6 +157,7 @@ class TelegramInvitationMetadata:
         channels.sort(key=lambda x: x["members"], reverse=True)
         return channels
 
+
 class DateRange:
 
     def __init__(self, start, end):
@@ -162,6 +172,7 @@ class DateRange:
                 newTimeLine.append(value)
         return newTimeLine
 
+
 class InverseDateRange:
 
     def __init__(self, start, end):
@@ -175,6 +186,7 @@ class InverseDateRange:
             if value['time'] < self.start and self.end > value['time']:
                 newTimeLine.append(value)
         return newTimeLine
+
 
 class ValueChangeIntervals:
 
@@ -198,6 +210,7 @@ class ValueChangeIntervals:
             results.append({'time': time, 'value': newValue})
 
         return results
+
 
 class KMeansClustering:
 
@@ -280,6 +293,7 @@ class KMeansClustering:
 
         return results
 
+
 class ClusterCentroid:
 
     def process(self, timeLine, timeLineClusters):
@@ -323,6 +337,7 @@ class ClusterCentroid:
 
         return result
 
+
 class Lowercase:
     
     def process(self, timeLine):
@@ -335,7 +350,8 @@ class Lowercase:
                     segment[k] = segment[k].lower()
             timeLine[j]['value'] = segment
         return timeLine 
-    
+
+
 class CharacterBlackList:
     
     def __init__(self, substrings):
@@ -355,6 +371,7 @@ class CharacterBlackList:
             timeLine[j]['value'] = segment
         return timeLine        
 
+
 class LambdaProjection:
     
     def __init__(self, projection):
@@ -369,7 +386,8 @@ class LambdaProjection:
                 result.append(projection)
             
         return result
-    
+
+
 class JSON:
     
     def process(self, timeLine):
@@ -381,6 +399,7 @@ class JSON:
             
         return result
 
+
 class Limit:
     def __init__(self, start, end):
         self.start = start
@@ -388,13 +407,16 @@ class Limit:
     def process(self, timeLine):
         return timeLine[self.start:self.end]
 
+
 class Count:
     def process(self, timeLine):
         return [len(timeLine)]
 
+
 class Empty():
     def process(self, timeLine):
         return
+
 
 class LastTimeFrame:
     def process(self, timeLine):
@@ -410,22 +432,92 @@ class LastTimeFrame:
         currentDate = currentDate - delta
         self.start = time.mktime(currentDate.timetuple()) * 1000
 
+
 class LastMinutes(LastTimeFrame):
     def __init__(self, count):
         self.startTime(timedelta(minutes = count))
-        
+
+
 class LastHours(LastTimeFrame):
     def __init__(self, count):
         self.startTime(timedelta(hours = count))
-        
+
+
 class LastDays(LastTimeFrame):
     def __init__(self, count):
         self.startTime(timedelta(days = count))
-        
+
+
 class LastWeeks(LastTimeFrame):
     def __init__(self, count):
         self.startTime(timedelta(weeks = count))
-        
+
+
 class LastMonths(LastTimeFrame):
     def __init__(self, count):
         self.startTime(timedelta(months = count))
+
+
+class CopyAIAugmentation:
+
+    def __init__(self, uri, augmented_culture):
+        self.uri = uri
+        self.augmented_culture = augmented_culture
+
+    @staticmethod
+    def headers():
+        return {
+            'content-type': "application/json",
+            'user-agent': "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/96.0.4664.110 Safari/537.36"
+        }
+
+    @staticmethod
+    def __build_augmented_text(api_response):
+        for event in api_response:
+            sentence = ""
+            for atom in event:
+                sentence = sentence + atom + "\n"
+            return sentence
+
+    def __build_augmented_event(self, original, augmented_text):
+        augmented_event = {
+            "kernelIdentifier": original["kernelIdentifier"],
+            "keyIdentifier": original["keyIdentifier"],
+            "hash": original["hash"],
+            "uri": original["uri"],
+            "date": original["date"],
+            "text": augmented_text,
+            "culture": self.augmented_culture,
+            "augmenter": "CopyAI"
+        }
+        return augmented_event
+
+    def process(self, time_line):
+        results = []
+        for event in time_line:
+            event_time = event["time"]
+            event_value = event["value"]
+            text = event_value["text"]
+            data = {
+                "name": text,
+                "description": text,
+                # TODO: Take original language from the kernel key culture
+                "input_language": self.augmented_culture,
+                "output_language": self.augmented_culture
+            }
+            response = requests.post(self.uri, headers=CopyAIAugmentation.headers(), data=json.dumps(data))
+            if response.status_code == 200:
+                atoms = json.loads(response.text)
+                augmented_text = CopyAIAugmentation.__build_augmented_text(atoms)
+                augmented_event_value = self.__build_augmented_event(event_value, augmented_text)
+                if "augmentations" not in event_value:
+                    event_value["augmentations"] = []
+                event_value["augmentations"].append(self.augmented_culture)
+                results.append(event)
+                results.append({
+                    "time": event_time,
+                    "value": augmented_event_value
+                })
+
+        return results

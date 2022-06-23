@@ -3,8 +3,9 @@ import ssl
 import json
 import time
 import requests
+from pymongo import MongoClient, DESCENDING
 import urllib.request
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup
 from storage_timeline_client import Storage
 from pysyun.timeline.algebra import Add
 
@@ -155,7 +156,7 @@ class CVEDescription:
                                  'Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
 
         r = session.get(uri, headers=headers)
-        soup = bs(r.content, 'html.parser')
+        soup = BeautifulSoup(r.content, 'html.parser')
         divs = soup.find_all('table', id='cvssscorestable')
         files = divs[0]
         files = files.text
@@ -181,7 +182,7 @@ class CoinMarketCapList:
                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                                  'Chrome/73.0.3683.86 Safari/537.36 OPR/60.0.3255.36'}
         request = session.get(uri, headers=headers)
-        document = bs(request.content, 'html.parser')
+        document = BeautifulSoup(request.content, 'html.parser')
         return document
 
     def __parse_number(self, value):
@@ -196,7 +197,7 @@ class CoinMarketCapList:
         exception_counter = 0
         for element in elements:
             try:
-                soup = bs(str(element), 'html.parser')
+                soup = BeautifulSoup(str(element), 'html.parser')
                 symbol = soup.select('.coin-item-symbol')[0].text
                 price = soup.select('td:nth-child(4)')[0].text
                 price = self.__parse_number(price)
@@ -273,3 +274,51 @@ class CopyAI:
             response = response["data"]["choices"]
             results.append(response)
         return results
+
+
+class MongoDBRecentEventsCollection:
+
+    def __init__(self, connection_string, database, collection, start=0, end=100):
+        self.connection = MongoClient(connection_string)
+        self.database = database
+        self.collection = collection
+        self.start = start
+        self.end = end
+
+    def process(self, filters):
+
+        if 0 < len(filters) and "time" in filters[0]:
+
+            database = self.connection[self.database]
+            events = database[self.collection]
+
+            # The time-line was passed
+            for event in filters:
+                event_value = event["value"]
+                if "_id" in event_value:
+                    events.update_one({
+                        "_id": event_value["_id"]
+                    }, {
+                        "$set": event_value
+                    })
+                else:
+                    events.insert_one(event_value)
+            return filters
+
+        else:
+
+            # The filter was passed
+            results = []
+            query_filter = filters
+            if 0 < len(filters):
+                query_filter = filters[0]
+            database = self.connection[self.database]
+            events = database[self.collection].find(query_filter).sort([('date', DESCENDING)])[self.start:self.end]
+            for event in events:
+                date_value = event["date"]
+                date_value = int(date_value.timestamp()) * 1000
+                results.append({
+                    'time': date_value,
+                    'value': event
+                })
+            return results

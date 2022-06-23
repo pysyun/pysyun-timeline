@@ -1,3 +1,7 @@
 requests
+pymongo
+pandas
+scipy
+sklearn
 beautifulsoup4
 git+https://github.com/vitche/python-storage-timeline-client.git
