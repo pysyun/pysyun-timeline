@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pysyun_timeline',
-    version='1.2',
+    version='1.3',
     description='Syun\'s Python SDK for time series analysis. Python toolkit for analyzing time series data.',
     author='Py Syun',
     author_email='pysyun@vitche.com',
