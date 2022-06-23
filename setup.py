@@ -10,6 +10,5 @@ setup(
                 'pysyun.timeline.graph', 'pysyun.timeline.reducers', 'pysyun.timeline.segmenters',
                 'pysyun.timeline.sources', 'pysyun.timeline.statistics', 'pysyun.timeline.renderers',
                 'pysyun.timeline.pipeline'],
-    install_requires=['requests', 'pymongo', 'pandas', 'scipy', 'sklearn', 'beautifulsoup4',
-                      'git+https://github.com/vitche/python-storage-timeline-client.git']
+    install_requires=['requests', 'pymongo', 'pandas', 'scipy', 'sklearn', 'beautifulsoup4']
 )
