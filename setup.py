@@ -11,5 +11,5 @@ setup(
                 'pysyun.timeline.sources', 'pysyun.timeline.statistics', 'pysyun.timeline.renderers',
                 'pysyun.timeline.pipeline'],
     install_requires=['requests', 'pymongo', 'pandas', 'scipy', 'sklearn', 'beautifulsoup4', 'plotly', 'matplotlib',
-                      'psutil']
+                      'psutil', 'transformers']
 )
