@@ -521,3 +521,39 @@ class CopyAIAugmentation:
                 })
 
         return results
+
+
+class GPT2Transformer:
+
+  def __init__(self, length, sentences):
+    self.length = length
+    self.sentences = sentences
+
+  def process(self, data):
+
+        from transformers import pipeline
+        generator = pipeline('text-generation', model='gpt2')
+
+        results = []
+        for item in data:
+
+            sentences = []
+            
+            response = generator(
+              item, 
+              do_sample=True, 
+              top_k=50, 
+              temperature=0.6, 
+              max_length=self.length, 
+              num_return_sequences=self.sentences
+            )
+
+            for sentence in response:
+              sentence = sentence["generated_text"]
+              last_fullstop = sentence.rfind(".")
+              sentence = sentence[:last_fullstop+1]
+              sentences.append(sentence)
+              
+            results.append(sentences)
+
+        return results
