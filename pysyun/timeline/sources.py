@@ -18,13 +18,13 @@ class StorageTimelineSchema:
         result = []
         time_line_names = self.schema.list()
         for timeLineName in time_line_names:
-            result.append(self.schema.timeLine(timeLineName))
+            result.append(self.schema.time_line(timeLineName))
         return result
 
 
 class StorageTimelineTimeline:
     def __init__(self, uri, schema_name, time_line_name):
-        self.timeLine = Storage(uri).schema(schema_name).timeLine(time_line_name)
+        self.timeLine = Storage(uri).schema(schema_name).time_line(time_line_name)
 
     def process(self, empty):
         return [self.timeLine]
@@ -36,7 +36,7 @@ class StorageTimelineStrings:
         cumulation = Add()
         for timeLine in time_lines:
             try:
-                values = timeLine.allStrings()
+                values = timeLine.all_strings()
                 results = cumulation.process(values)
             except:
                 print("Unable to fetch data from Storage.Timeline", timeLine.schema, timeLine.name)
