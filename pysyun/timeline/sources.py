@@ -24,10 +24,10 @@ class StorageTimelineSchema:
 
 class StorageTimelineTimeline:
     def __init__(self, uri, schema_name, time_line_name):
-        self.timeLine = Storage(uri).schema(schema_name).time_line(time_line_name)
+        self.time_line = Storage(uri).schema(schema_name).time_line(time_line_name)
 
     def process(self, empty):
-        return [self.timeLine]
+        return [self.time_line]
 
 
 class StorageTimelineStrings:
