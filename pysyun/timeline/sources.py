@@ -43,6 +43,19 @@ class StorageTimelineStrings:
         return results
 
 
+class StorageTimelineDocuments:
+    def process(self, time_lines):
+        results = []
+        cumulation = Add()
+        for timeLine in time_lines:
+            try:
+                values = timeLine.all_documents()
+                results = cumulation.process(values)
+            except:
+                print("Unable to fetch data from Storage.Timeline", timeLine.schema, timeLine.name)
+        return results
+
+
 class GoogleObserver:
 
     def __init__(self, storage_uri, kernel_identifier, from_timestamp=None):
