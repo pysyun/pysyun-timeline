@@ -13,7 +13,7 @@ from pysyun.timeline.statistics import MedianAggregateIndexes
 # Plotly for interactive charts
 import plotly.graph_objs as go
 # Switch Plotly to offline mode
-from plotly.offline import init_notebook_mode, iplot
+from plotly.offline import init_notebook_mode
 try:
     init_notebook_mode(connected=True)
 except Exception:
@@ -101,7 +101,7 @@ class InteractiveTimeLineChart:
                 yaxis=dict(title=self.yTitle)
             )
             data = go.Figure(self.traces, layout=layout)
-            iplot(data)
+            data.show(renderer="colab")
 
 
 class InteractiveScatterTimeLineChart:
@@ -144,7 +144,7 @@ class InteractiveScatterTimeLineChart:
                 yaxis=dict(title=self.yTitle)
             )
             data = go.Figure(self.traces, layout=layout)
-            iplot(data)
+            data.show(renderer="colab")
 
 
 class Console:
