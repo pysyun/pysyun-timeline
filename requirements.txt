@@ -8,3 +8,4 @@ plotly
 matplotlib
 psutil
 git+https://github.com/vitche/python-storage-timeline-client.git
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
