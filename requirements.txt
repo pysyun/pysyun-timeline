@@ -9,3 +9,4 @@ matplotlib
 psutil
 git+https://github.com/vitche/python-storage-timeline-client.git
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
